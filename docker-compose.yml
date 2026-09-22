@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stock_management
+    ports:
+      - "5432:5432" # exposed so DBeaver can connect from your host machine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/stock_management?schema=public"
+      PORT: 4000
+      JWT_SECRET: "replace-this-with-a-long-random-string"
+      JWT_EXPIRES_IN: "1d"
+    ports:
+      - "4000:4000"
+
+volumes:
+  pgdata:

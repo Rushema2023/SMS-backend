@@ -1,0 +1,61 @@
+// Prisma schema: source of truth for our database structure.
+// Every time you change this file, run `npm run prisma:migrate`
+// to generate a migration and apply it to Postgres.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN // can manage users and items within their organization
+  STAFF // can manage items only
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users User[]
+  items Item[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  passwordHash   String   @map("password_hash")
+  role           Role     @default(STAFF)
+  organizationId String   @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("users")
+}
+
+model Item {
+  id             String   @id @default(uuid())
+  name           String
+  sku            String
+  quantity       Int      @default(0)
+  unit           String   @default("pcs")
+  organizationId String   @map("organization_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // an SKU only needs to be unique within one organization, not globally
+  @@unique([organizationId, sku])
+  @@map("items")
+}
