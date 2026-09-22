@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { prisma } from "../utils/prisma";
 import { signToken } from "../utils/jwt";
 import { RegisterInput, LoginInput } from "../utils/schemas/auth.schema";

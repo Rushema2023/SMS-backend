@@ -1,3 +1,4 @@
+import "./types/express";
 import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
@@ -17,6 +18,9 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
+app.get("/", (_req, res) => {
+  res.json({ message: "Welcome to Stock Management APIs" });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/items", itemRoutes);
