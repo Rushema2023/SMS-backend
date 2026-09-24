@@ -27,6 +27,15 @@ router.get("/", userController.listHandler);
  *     summary: Get a single user by id
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: UUID of the user to retrieve
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
  *     responses:
  *       200: { description: The user }
  *       404: { description: Not found }
@@ -65,6 +74,15 @@ router.post("/", requireRole("ADMIN"), validate(createUserSchema), userControlle
  *     summary: Update a user's name or role (admin only)
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: UUID of the user to update
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
  *     responses:
  *       200: { description: User updated }
  *       403: { description: Only admins can update users }
@@ -78,6 +96,15 @@ router.patch("/:id", requireRole("ADMIN"), validate(updateUserSchema), userContr
  *     summary: Remove a user from the organization (admin only)
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         description: UUID of the user to delete
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
  *     responses:
  *       204: { description: User deleted }
  *       403: { description: Only admins can delete users }

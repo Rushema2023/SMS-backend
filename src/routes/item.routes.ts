@@ -17,7 +17,14 @@ router.use(requireAuth);
  *     tags: [Items]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: List of items }
+ *       200:
+ *         description: List of items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/Item' }
+ *       401: { description: Missing, invalid, or expired token }
  */
 router.get("/", itemController.listHandler);
 
@@ -34,8 +41,13 @@ router.get("/", itemController.listHandler);
  *         required: true
  *         schema: { type: string }
  *     responses:
- *       200: { description: The item }
+ *       200:
+ *         description: The item
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Item' }
  *       404: { description: Not found }
+ *       401: { description: Missing, invalid, or expired token }
  */
 router.get("/:id", itemController.getHandler);
 
@@ -50,17 +62,16 @@ router.get("/:id", itemController.getHandler);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             type: object
- *             required: [name, sku]
- *             properties:
- *               name: { type: string }
- *               sku: { type: string }
- *               quantity: { type: integer }
- *               unit: { type: string }
+ *           schema: { $ref: '#/components/schemas/CreateItemInput' }
  *     responses:
- *       201: { description: Item created }
+ *       201:
+ *         description: Item created
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Item' }
  *       409: { description: SKU already exists in this organization }
+ *       400: { description: Validation error }
+ *       401: { description: Missing, invalid, or expired token }
  */
 router.post("/", validate(createItemSchema), itemController.createHandler);
 
@@ -76,9 +87,21 @@ router.post("/", validate(createItemSchema), itemController.createHandler);
  *         name: id
  *         required: true
  *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { $ref: '#/components/schemas/UpdateItemInput' }
  *     responses:
- *       200: { description: Item updated }
+ *       200:
+ *         description: Item updated
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/Item' }
  *       404: { description: Not found }
+ *       409: { description: SKU already exists in this organization }
+ *       400: { description: Validation error }
+ *       401: { description: Missing, invalid, or expired token }
  */
 router.patch("/:id", validate(updateItemSchema), itemController.updateHandler);
 
@@ -97,6 +120,7 @@ router.patch("/:id", validate(updateItemSchema), itemController.updateHandler);
  *     responses:
  *       204: { description: Item deleted }
  *       404: { description: Not found }
+ *       401: { description: Missing, invalid, or expired token }
  */
 router.delete("/:id", itemController.deleteHandler);
 

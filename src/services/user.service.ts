@@ -38,7 +38,13 @@ export async function createUser(organizationId: string, input: CreateUserInput)
   const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);
 
   return prisma.user.create({
-    data: { ...input, passwordHash, organizationId },
+    data: {
+      name: input.name,
+      email: input.email,
+      role: input.role,
+      passwordHash,
+      organizationId,
+    },
     select: publicUser,
   });
 }

@@ -39,10 +39,16 @@ export async function updateItem(organizationId: string, itemId: string, input: 
   // otherwise a crafted itemId from another org could slip through.
   await getItem(organizationId, itemId);
 
-  return prisma.item.update({
-    where: { id: itemId },
-    data: input,
-  });
+  if (input.sku) {
+    const matchingSku = await prisma.item.findUnique({
+      where: { organizationId_sku: { organizationId, sku: input.sku } },
+    });
+    if (matchingSku && matchingSku.id !== itemId) {
+      throw { status: 409, message: "An item with this SKU already exists in your organization" };
+    }
+  }
+
+  return prisma.item.update({ where: { id: itemId }, data: input });
 }
 
 export async function deleteItem(organizationId: string, itemId: string) {
