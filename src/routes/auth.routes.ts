@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { registerHandler, loginHandler } from "../controllers/auth.controller";
+import { registerHandler, loginHandler, meHandler } from "../controllers/auth.controller";
+import { requireAuth } from "../middleware/auth.middleware";
 import { validate } from "../middleware/validate.middleware";
 import { registerSchema, loginSchema } from "../utils/schemas/auth.schema";
 
@@ -50,5 +51,18 @@ router.post("/register", validate(registerSchema), registerHandler);
  *       401: { description: Invalid credentials }
  */
 router.post("/login", validate(loginSchema), loginHandler);
+
+/**
+ * @openapi
+ * /api/auth/me:
+ *   get:
+ *     summary: Return the signed-in user and organization for a valid JWT
+ *     tags: [Auth]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Current user and organization }
+ *       401: { description: Missing, invalid, expired, or revoked session }
+ */
+router.get("/me", requireAuth, meHandler);
 
 export default router;

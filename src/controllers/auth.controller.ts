@@ -25,3 +25,16 @@ export async function loginHandler(req: Request, res: Response) {
     res.status(error.status).json({ error: error.message });
   }
 }
+
+export async function meHandler(req: Request, res: Response) {
+  try {
+    const result = await authService.getCurrentUser(
+      req.user!.userId,
+      req.user!.organizationId,
+    );
+    res.json(result);
+  } catch (err: unknown) {
+    const error = getErrorResponse(err);
+    res.status(error.status).json({ error: error.message });
+  }
+}

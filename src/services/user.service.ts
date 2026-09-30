@@ -52,6 +52,13 @@ export async function createUser(organizationId: string, input: CreateUserInput)
 export async function updateUser(organizationId: string, userId: string, input: UpdateUserInput) {
   await getUser(organizationId, userId); // ensures it belongs to this org
 
+  if (input.email) {
+    const existing = await prisma.user.findUnique({ where: { email: input.email } });
+    if (existing && existing.id !== userId) {
+      throw { status: 409, message: "A user with this email already exists" };
+    }
+  }
+
   return prisma.user.update({
     where: { id: userId },
     data: input,

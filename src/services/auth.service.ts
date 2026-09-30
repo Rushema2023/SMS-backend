@@ -47,7 +47,10 @@ export async function register(input: RegisterInput) {
 }
 
 export async function login(input: LoginInput) {
-  const user = await prisma.user.findUnique({ where: { email: input.email } });
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+    include: { organization: { select: { id: true, name: true } } },
+  });
   if (!user) {
     throw { status: 401, message: "Invalid email or password" };
   }
@@ -66,5 +69,23 @@ export async function login(input: LoginInput) {
   return {
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    organization: user.organization,
+  };
+}
+
+/** Returns the fresh identity associated with a verified JWT. */
+export async function getCurrentUser(userId: string, organizationId: string) {
+  const user = await prisma.user.findFirst({
+    where: { id: userId, organizationId },
+    include: { organization: { select: { id: true, name: true } } },
+  });
+
+  if (!user) {
+    throw { status: 401, message: "Session user no longer exists" };
+  }
+
+  return {
+    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    organization: user.organization,
   };
 }

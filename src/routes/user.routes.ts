@@ -83,6 +83,12 @@ router.post("/", requireRole("ADMIN"), validate(createUserSchema), userControlle
  *           type: string
  *           format: uuid
  *         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserInput'
  *     responses:
  *       200: { description: User updated }
  *       403: { description: Only admins can update users }

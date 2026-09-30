@@ -52,6 +52,15 @@ const options: swaggerJsdoc.Options = {
             unit: { type: "string", maxLength: 30, example: "pcs" },
           },
         },
+        UpdateUserInput: {
+          type: "object",
+          minProperties: 1,
+          properties: {
+            name: { type: "string", minLength: 2, example: "Updated Name" },
+            email: { type: "string", format: "email", example: "updated@example.com" },
+            role: { type: "string", enum: ["ADMIN", "STAFF"], example: "STAFF" },
+          },
+        },
         Error: {
           type: "object",
           required: ["error"],
