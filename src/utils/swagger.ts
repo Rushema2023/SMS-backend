@@ -1,4 +1,10 @@
 import swaggerJsdoc from "swagger-jsdoc";
+import path from "node:path";
+
+const routeFileExtension = path.extname(__filename) === ".ts" ? "ts" : "js";
+const routeDocumentationGlob = path
+  .join(__dirname, `../routes/*.${routeFileExtension}`)
+  .replace(/\\/g, "/");
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -18,6 +24,30 @@ const options: swaggerJsdoc.Options = {
         },
       },
       schemas: {
+        Organization: {
+          type: "object",
+          required: ["id", "name"],
+          properties: {
+            id: { type: "string", format: "uuid" },
+            name: { type: "string", example: "Acme Ltd" },
+          },
+        },
+        User: {
+          type: "object",
+          required: ["id", "name", "email", "role", "organizationId", "createdAt"],
+          properties: {
+            id: { type: "string", format: "uuid" },
+            name: { type: "string", example: "Jane Doe" },
+            email: { type: "string", format: "email", example: "jane@acme.com" },
+            role: { type: "string", enum: ["ADMIN", "STAFF"], example: "ADMIN" },
+            organizationId: {
+              type: "string",
+              format: "uuid",
+              description: "The API representation of the users.organization_id database column.",
+            },
+            createdAt: { type: "string", format: "date-time" },
+          },
+        },
         Item: {
           type: "object",
           required: ["id", "name", "sku", "quantity", "unit", "organizationId", "createdAt", "updatedAt"],
@@ -69,9 +99,9 @@ const options: swaggerJsdoc.Options = {
       },
     },
   },
-  // swagger-jsdoc reads the @openapi comment blocks in these files
-  // and turns them into the interactive docs at /docs.
-  apis: ["./src/routes/*.ts"],
+  // Resolve from this module so docs work when running either TypeScript from
+  // src or compiled JavaScript from dist, regardless of the process CWD.
+  apis: [routeDocumentationGlob],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);

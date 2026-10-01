@@ -16,7 +16,13 @@ router.use(requireAuth);
  *     tags: [Users]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: List of users }
+ *       200:
+ *         description: List of users, including each user's organizationId
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { $ref: '#/components/schemas/User' }
  */
 router.get("/", userController.listHandler);
 
@@ -37,7 +43,11 @@ router.get("/", userController.listHandler);
  *           format: uuid
  *         example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
  *     responses:
- *       200: { description: The user }
+ *       200:
+ *         description: The user, including organizationId
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/User' }
  *       404: { description: Not found }
  */
 router.get("/:id", userController.getHandler);
@@ -62,7 +72,11 @@ router.get("/:id", userController.getHandler);
  *               password: { type: string }
  *               role: { type: string, enum: [ADMIN, STAFF] }
  *     responses:
- *       201: { description: User created }
+ *       201:
+ *         description: User created, including organizationId
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/User' }
  *       403: { description: Only admins can add users }
  */
 router.post("/", requireRole("ADMIN"), validate(createUserSchema), userController.createHandler);
@@ -90,7 +104,11 @@ router.post("/", requireRole("ADMIN"), validate(createUserSchema), userControlle
  *           schema:
  *             $ref: '#/components/schemas/UpdateUserInput'
  *     responses:
- *       200: { description: User updated }
+ *       200:
+ *         description: User updated, including organizationId
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/User' }
  *       403: { description: Only admins can update users }
  */
 router.patch("/:id", requireRole("ADMIN"), validate(updateUserSchema), userController.updateHandler);

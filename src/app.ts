@@ -22,6 +22,7 @@ app.use(express.json());
 // Interactive API docs, generated from the @openapi comments in src/routes.
 // Visit http://localhost:4000/docs once the server is running.
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/openapi.json", (_req, res) => res.json(swaggerSpec));
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 

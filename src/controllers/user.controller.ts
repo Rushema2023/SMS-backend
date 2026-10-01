@@ -3,8 +3,13 @@ import * as userService from "../services/user.service";
 import { getErrorResponse } from "../utils/error-response";
 
 export async function listHandler(req: Request, res: Response) {
-  const users = await userService.listUsers(req.user!.organizationId);
-  res.json(users);
+  try {
+    const users = await userService.listUsers(req.user!.organizationId);
+    res.json(users);
+  } catch (err: unknown) {
+    const error = getErrorResponse(err);
+    res.status(error.status).json({ error: error.message });
+  }
 }
 
 export async function getHandler(req: Request, res: Response) {
